@@ -1,120 +1,63 @@
-<p align="center">
-  <img title="Redash" src='https://redash.io/assets/images/logo.png' width="200px"/>
-</p>
+# Business-Intelligence-Dashboard
 
-[![Documentation](https://img.shields.io/badge/docs-redash.io/help-brightgreen.svg)](https://redash.io/help/)
-[![GitHub Build](https://github.com/getredash/redash/actions/workflows/ci.yml/badge.svg)](https://github.com/getredash/redash/actions)
+## Cài đặt REDASH - TOOL VISUALIZE
 
-Redash is designed to enable anyone, regardless of the level of technical sophistication, to harness the power of data big and small. SQL users leverage Redash to explore, query, visualize, and share data from any data sources. Their work in turn enables anybody in their organization to use the data. Every day, millions of users at thousands of organizations around the world use Redash to develop insights and make data-driven decisions.
+### Cài đặt Redis
+* curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+* echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+* sudo apt-get update
+* sudo apt-get install redis
+* Tham khảo: https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-22-04
 
-Redash features:
+### Cài đặt Database
+B1: Cài đặt database postgresql cho ubuntu 20.04
+* sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+* sudo wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+* sudo apt-get update
+* sudo apt-get -y install postgresql-14
+* Tham khảo: https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart
 
-1. **Browser-based**: Everything in your browser, with a shareable URL.
-2. **Ease-of-use**: Become immediately productive with data without the need to master complex software.
-3. **Query editor**: Quickly compose SQL and NoSQL queries with a schema browser and auto-complete.
-4. **Visualization and dashboards**: Create [beautiful visualizations](https://redash.io/help/user-guide/visualizations/visualization-types) with drag and drop, and combine them into a single dashboard.
-5. **Sharing**: Collaborate easily by sharing visualizations and their associated queries, enabling peer review of reports and queries.
-6. **Schedule refreshes**: Automatically update your charts and dashboards at regular intervals you define.
-7. **Alerts**: Define conditions and be alerted instantly when your data changes.
-8. **REST API**: Everything that can be done in the UI is also available through REST API.
-9. **Broad support for data sources**: Extensible data source API with native support for a long list of common databases and platforms.
+B2: Tạo database `redash`
+* sudo -u postgres psql
+* CREATE DATABASE redash;
+* CREATE USER admin WITH PASSWORD 'admin123456';
+* GRANT ALL PRIVILEGES ON DATABASE redash TO admin;
 
-<img src="https://raw.githubusercontent.com/getredash/website/8e820cd02c73a8ddf4f946a9d293c54fd3fb08b9/website/_assets/images/redash-anim.gif" width="80%"/>
+### Cài đặt redash (môi trường test)
+B1: Tạo/sửa file môi trường .env
 
-## Getting Started
+* Địa chỉ database, địa chỉ redis theo mẫu
+* Database: `postgresql://***:*****@*******:5432/redash`
+* Redis: `redis://*********:6379/0`
 
-* [Setting up Redash instance](https://redash.io/help/open-source/setup) (includes links to ready-made AWS/GCE images).
-* [Documentation](https://redash.io/help/).
+B2: Tạo image redash sử dụng dockerfile
 
-## Supported Data Sources
+* docker build -t redash:version1 -f Dockerfile .
 
-Redash supports more than 35 SQL and NoSQL [data sources](https://redash.io/help/data-sources/supported-data-sources). It can also be extended to support more. Below is a list of built-in sources:
+B3: Tạo bảng trong database `redash` (đã tạo)
 
-- Amazon Athena
-- Amazon CloudWatch / Insights
-- Amazon DynamoDB
-- Amazon Redshift
-- ArangoDB
-- Axibase Time Series Database
-- Apache Cassandra
-- ClickHouse
-- CockroachDB
-- Couchbase
-- CSV
-- Databricks
-- DB2 by IBM
-- Dgraph
-- Apache Drill
-- Apache Druid
-- e6data
-- Eccenca Corporate Memory
-- Elasticsearch
-- Exasol
-- Microsoft Excel
-- Firebolt
-- Databend
-- Google Analytics
-- Google BigQuery
-- Google Spreadsheets
-- Graphite
-- Greenplum
-- Apache Hive
-- Apache Impala
-- InfluxDB
-- InfluxDBv2
-- IBM Netezza Performance Server
-- JIRA (JQL)
-- JSON
-- Apache Kylin
-- OmniSciDB (Formerly MapD)
-- MariaDB
-- MemSQL
-- Microsoft Azure Data Warehouse / Synapse
-- Microsoft Azure SQL Database
-- Microsoft Azure Data Explorer / Kusto
-- Microsoft SQL Server
-- MongoDB
-- MySQL
-- Oracle
-- Apache Phoenix
-- Apache Pinot
-- PostgreSQL
-- Presto
-- Prometheus
-- Python
-- Qubole
-- Rockset
-- RisingWave
-- Salesforce
-- ScyllaDB
-- Shell Scripts
-- Snowflake
-- SPARQL
-- SQLite
-- TiDB
-- Tinybird
-- TreasureData
-- Trino
-- Uptycs
-- Vertica
-- Yandex AppMetrrica
-- Yandex Metrica
+* docker-compose run --rm server create_db
 
-## Getting Help
+B4: Chạy redash:
 
-* Issues: https://github.com/getredash/redash/issues
-* Discussion Forum: https://github.com/getredash/redash/discussions/
-* Development Discussion: https://discord.gg/tN5MdmfGBp
+* docker-compose up
 
-## Reporting Bugs and Contributing Code
+B5: Địa chỉ giao diện redash: ip:5001
 
-* Want to report a bug or request a feature? Please open [an issue](https://github.com/getredash/redash/issues/new).
-* Want to help us build **_Redash_**? Fork the project, edit in a [dev environment](https://github.com/getredash/redash/wiki/Local-development-setup) and make a pull request. We need all the help we can get!
+### Các lỗi thường gặp trong cài đặt
 
-## Security
+Lỗi 1: Không kết nối được database đã tạo (port: 5432).
+* `sudo vim /etc/postgresql/14/main/postgresql.conf`
+* sửa `listen_addresses = "*"`
+* `sudo vim /etc/postgresql/14/main/pg_hba.conf`
+* khai báo `host: 0.0.0.0/0 md5`
 
-Please email security@redash.io to report any security vulnerabilities. We will acknowledge receipt of your vulnerability and strive to send you regular updates about our progress. If you're curious about the status of your disclosure please feel free to email us again. If you want to encrypt your disclosure email, you can use [this PGP key](https://keybase.io/arikfr/key.asc).
+Lỗi 2: Không kết nối được redis (cannot connect redis refuse)
+* `sudo service redis-server status`
+* `sudo vim /etc/redis/redis.conf`
+* sửa `supervised systemd`
+* Lưu ý: Có thể cài đặt redis bằng docker
 
-## License
+### Dashboard
+![APP](/images/dashboard.png)
 
-BSD-2-Clause.
