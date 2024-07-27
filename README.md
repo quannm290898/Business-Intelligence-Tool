@@ -9,10 +9,10 @@ Redash là tool giúp truy vấn, trực quan hoá dữ liệu từ các nguồn
 ## Cài đặt REDASH - TOOL VISUALIZE
 Lưu ý: Redis, Database Postgresql có thể cài đặt bằng docker
 ### Cài đặt Redis 
-* brew install redis
+* `brew install redis`
 ### Cài đặt Database
 B1: Cài đặt database postgresql cho Macos
-* brew install postgresql
+* `brew install postgresql`
 
 B2: Tạo database `redash`, phân quyền người dùng cho Table
 * sudo -u postgres psql
@@ -22,7 +22,7 @@ B2: Tạo database `redash`, phân quyền người dùng cho Table
 
 ### Cài đặt redash (Sử dụng Docker)
 B1: Clone Project 
-`git clone https://github.com/quannm290898/Business-Intelligence-Tool.git`
+* `git clone https://github.com/quannm290898/Business-Intelligence-Tool.git`
 
 B2: Tạo/sửa file môi trường .env
 * Địa chỉ database, địa chỉ redis theo mẫu
